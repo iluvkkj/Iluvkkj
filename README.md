@@ -1,148 +1,444 @@
--- Gui to Lua
--- Version: 3.2
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({IntroText = "Doors GUI v1.2",Name = "Doors", HidePremium = false, SaveConfig = true, ConfigFolder = "DoorsSex"})
+if game.PlaceId == 6516141723 then
+    OrionLib:MakeNotification({
+        Name = "Error",
+        Content = "Please execute when in game, not in lobby.",
+        Time = 2
+    })
+end
+local VisualsTab = Window:MakeTab({
+	Name = "Visuals",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local CF = CFrame.new
+local LatestRoom = game:GetService("ReplicatedStorage").GameData.LatestRoom
+local ChaseStart = game:GetService("ReplicatedStorage").GameData.ChaseStart
 
--- Instances:
+local KeyChams = {}
+VisualsTab:AddToggle({
+	Name = "Key Chams",
+	Default = false,
+    Flag = "KeyToggle",
+    Save = true,
+	Callback = function(Value)
+		for i,v in pairs(KeyChams) do
+            v.Enabled = Value
+        end
+	end    
+})
 
-local Close = Instance.new("TextButton")
-local Open2 = Instance.new("ScreenGui")
-local Open = Instance.new("TextButton")
-local FightingGui = Instance.new("ScreenGui")
-local main = Instance.new("Frame")
-local Cre = Instance.new("TextLabel")
-local HitBox = Instance.new("TextBox")
-local Red = Instance.new("TextBox")
-local Green = Instance.new("TextBox")
-local Blue = Instance.new("TextBox")
-local TextLabel = Instance.new("TextLabel")
+local function ApplyKeyChams(inst)
+    wait()
+    local Cham = Instance.new("Highlight")
+    Cham.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    Cham.FillColor = Color3.new(0.980392, 0.670588, 0)
+    Cham.FillTransparency = 0.5
+    Cham.OutlineColor = Color3.new(0.792156, 0.792156, 0.792156)
+    Cham.Parent = game:GetService("CoreGui")
+    Cham.Adornee = inst
+    Cham.Enabled = OrionLib.Flags["KeyToggle"].Value
+    Cham.RobloxLocked = true
+    return Cham
+end
 
---Properties:
+local KeyCoroutine = coroutine.create(function()
+    workspace.CurrentRooms.DescendantAdded:Connect(function(inst)
+        if inst.Name == "KeyObtain" then
+            table.insert(KeyChams,ApplyKeyChams(inst))
+        end
+    end)
+end)
+for i,v in ipairs(workspace:GetDescendants()) do
+    if v.Name == "KeyObtain" then
+        table.insert(KeyChams,ApplyKeyChams(v))
+    end
+end
+coroutine.resume(KeyCoroutine)
 
-FightingGui.Name = "FightingGui"
-FightingGui.Parent = game.CoreGui
-FightingGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local BookChams = {}
+VisualsTab:AddToggle({
+	Name = "Book Chams",
+	Default = false,
+    Flag = "BookToggle",
+    Save = true,
+	Callback = function(Value)
+		for i,v in pairs(BookChams) do
+            v.Enabled = Value
+        end
+	end    
+})
 
+local FigureChams = {}
+VisualsTab:AddToggle({
+	Name = "Figure Chams",
+	Default = false,
+    Flag = "FigureToggle",
+    Save = true,
+    Callback = function(Value)
+        for i,v in pairs(FigureChams) do
+            v.Enabled = Value
+        end
+    end
+})
 
-Open2.Name = "Tools"
-Open2.Parent = game.CoreGui
-Open2.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local function ApplyBookChams(inst)
+    if inst:IsDescendantOf(game:GetService("Workspace").CurrentRooms:FindFirstChild("50")) and game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 50 then
+        wait()
+        local Cham = Instance.new("Highlight")
+        Cham.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        Cham.FillColor = Color3.new(0, 1, 0.749019)
+        Cham.FillTransparency = 0.5
+        Cham.OutlineColor = Color3.new(0.792156, 0.792156, 0.792156)
+        Cham.Parent = game:GetService("CoreGui")
+        Cham.Enabled = OrionLib.Flags["BookToggle"].Value
+        Cham.Adornee = inst
+        Cham.RobloxLocked = true
+        return Cham
+    end
+end
 
-Open.Name = "Open"
-Open.Parent = Open2
-Open.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Open.Position = UDim2.new(0, 0, 0.451871663, 0)
-Open.Size = UDim2.new(0, 78, 0, 50)
-Open.Font = Enum.Font.SourceSans
-Open.Text = "Open"
-Open.TextColor3 = Color3.fromRGB(250, 0, 0)
-Open.TextScaled = true
-Open.TextSize = 14.000
-Open.TextWrapped = true
-Open.MouseButton1Down:Connect(function()
- FightingGui.Enabled = true
+local function ApplyEntityChams(inst)
+    wait()
+    local Cham = Instance.new("Highlight")
+    Cham.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    Cham.FillColor = Color3.new(1, 0, 0)
+    Cham.FillTransparency = 0.5
+    Cham.OutlineColor = Color3.new(0.792156, 0.792156, 0.792156)
+    Cham.Parent = game:GetService("CoreGui")
+    Cham.Enabled = OrionLib.Flags["FigureToggle"].Value
+    Cham.Adornee = inst
+    Cham.RobloxLocked = true
+    return Cham
+end
+
+local BookCoroutine = coroutine.create(function()
+    task.wait(1)
+    for i,v in pairs(game:GetService("Workspace").CurrentRooms["50"].Assets:GetDescendants()) do
+        if v.Name == "LiveHintBook" then
+            table.insert(BookChams,ApplyBookChams(v))
+        end
+    end
+end)
+local EntityCoroutine = coroutine.create(function()
+    local Entity = game:GetService("Workspace").CurrentRooms["50"].FigureSetup:WaitForChild("FigureRagdoll",5)
+    Entity:WaitForChild("Torso",2.5)
+    table.insert(FigureChams,ApplyEntityChams(Entity))
 end)
 
-Close.Name = "Close"
-Close.Parent = main
-Close.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-Close.Position = UDim2.new(1, 0, -0.226244345, 0)
-Close.Size = UDim2.new(0, 60, 0, 50)
-Close.Font = Enum.Font.SourceSans
-Close.Text = "X"
-Close.TextColor3 = Color3.fromRGB(0, 0, 0)
-Close.TextScaled = true
-Close.TextSize = 14.000
-Close.TextWrapped = true
-Close.MouseButton1Down:Connect(function()
- FightingGui.Enabled = false
+
+local GameTab = Window:MakeTab({
+	Name = "Game",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local CharTab = Window:MakeTab({
+	Name = "Character",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local TargetWalkspeed
+CharTab:AddSlider({
+	Name = "Speed",
+	Min = 0,
+	Max = 50,
+	Default = 5,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	Callback = function(Value)
+		TargetWalkspeed = Value
+	end    
+})
+
+local pcl = Instance.new("SpotLight")
+pcl.Brightness = 1
+pcl.Face = Enum.NormalId.Front
+pcl.Range = 90
+pcl.Parent = game.Players.LocalPlayer.Character.Head
+pcl.Enabled = false
+
+
+CharTab:AddToggle({
+	Name = "Headlight",
+	Default = false,
+    Callback = function(Value)
+        pcl.Enabled = Value
+    end
+})
+
+GameTab:AddToggle({
+	Name = "No seek arms/obstructions",
+	Default = false,
+    Flag = "NoSeek",
+    Save = true
+})
+
+GameTab:AddToggle({
+	Name = "Instant Interact",
+	Default = false,
+    Flag = "InstantToggle",
+    Save = true
+})
+GameTab:AddButton({
+	Name = "Skip level",
+	Callback = function()
+        pcall(function()
+            local HasKey = false
+            local CurrentDoor = workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]:WaitForChild("Door")
+            for i,v in ipairs(CurrentDoor.Parent:GetDescendants()) do
+                if v.Name == "KeyObtain" then
+                    HasKey = v
+                end
+            end
+            if HasKey then
+                game.Players.LocalPlayer.Character:PivotTo(CF(HasKey.Hitbox.Position))
+                wait(0.3)
+                fireproximityprompt(HasKey.ModulePrompt,0)
+                game.Players.LocalPlayer.Character:PivotTo(CF(CurrentDoor.Door.Position))
+                wait(0.3)
+                fireproximityprompt(CurrentDoor.Lock.UnlockPrompt,0)
+            end
+            if LatestRoom == 50 then
+                CurrentDoor = workspace.CurrentRooms[tostring(LatestRoom+1)]:WaitForChild("Door")
+            end
+            game.Players.LocalPlayer.Character:PivotTo(CF(CurrentDoor.Door.Position))
+            wait(0.3)
+            CurrentDoor.ClientOpen:FireServer()
+        end)
+  	end    
+})
+
+GameTab:AddToggle({
+	Name = "Auto skip level",
+	Default = false,
+    Save = false,
+    Flag = "AutoSkip"
+})
+
+local AutoSkipCoro = coroutine.create(function()
+        while true do
+            task.wait()
+            pcall(function()
+            if OrionLib.Flags["AutoSkip"].Value == true and game:GetService("ReplicatedStorage").GameData.LatestRoom.Value < 100 then
+                local HasKey = false
+                local LatestRoom = game:GetService("ReplicatedStorage").GameData.LatestRoom.Value
+                local CurrentDoor = workspace.CurrentRooms[tostring(LatestRoom)]:WaitForChild("Door")
+                for i,v in ipairs(CurrentDoor.Parent:GetDescendants()) do
+                    if v.Name == "KeyObtain" then
+                        HasKey = v
+                    end
+                end
+                if HasKey then
+                    game.Players.LocalPlayer.Character:PivotTo(CF(HasKey.Hitbox.Position))
+                    task.wait(0.3)
+                    fireproximityprompt(HasKey.ModulePrompt,0)
+                    game.Players.LocalPlayer.Character:PivotTo(CF(CurrentDoor.Door.Position))
+                    task.wait(0.3)
+                    fireproximityprompt(CurrentDoor.Lock.UnlockPrompt,0)
+                end
+                if LatestRoom == 50 then
+                    CurrentDoor = workspace.CurrentRooms[tostring(LatestRoom+1)]:WaitForChild("Door")
+                end
+                game.Players.LocalPlayer.Character:PivotTo(CF(CurrentDoor.Door.Position))
+                task.wait(0.3)
+                CurrentDoor.ClientOpen:FireServer()
+            end
+        end)
+        end
+end)
+coroutine.resume(AutoSkipCoro)
+
+GameTab:AddButton({
+	Name = "No jumpscares",
+	Callback = function()
+        pcall(function()
+            game:GetService("ReplicatedStorage").Bricks.Jumpscare:Destroy()
+        end)
+  	end    
+})
+GameTab:AddToggle({
+	Name = "Avoid Rush/Ambush",
+	Default = false,
+    Flag = "AvoidRushToggle",
+    Save = true
+})
+GameTab:AddToggle({
+	Name = "No Screech",
+	Default = false,
+    Flag = "ScreechToggle",
+    Save = true
+})
+
+GameTab:AddToggle({
+	Name = "Always win heartbeat",
+	Default = false,
+    Flag = "HeartbeatWin",
+    Save = true
+})
+
+GameTab:AddToggle({
+	Name = "Predict chases",
+	Default = false,
+    Flag = "PredictToggle" ,
+    Save = true
+})
+GameTab:AddToggle({
+	Name = "Notify when mob spawns",
+	Default = false,
+    Flag = "MobToggle" ,
+    Save = true
+})
+GameTab:AddButton({
+	Name = "Complete breaker box minigame",
+	Callback = function()
+        game:GetService("ReplicatedStorage").Bricks.EBF:FireServer()
+  	end    
+})
+GameTab:AddButton({
+	Name = "Skip level 50",
+	Callback = function()
+        local CurrentDoor = workspace.CurrentRooms[tostring(LatestRoom+1)]:WaitForChild("Door")
+        game.Players.LocalPlayer.Character:PivotTo(CF(CurrentDoor.Door.Position))
+  	end    
+})
+GameTab:AddParagraph("Warning","You may need to open/close the panel a few times for this to work, fixing soon.")
+
+--// ok actual code starts here
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    pcall(function()
+        if game.Players.LocalPlayer.Character.Humanoid.MoveDirection.Magnitude > 0 then
+            game.Players.LocalPlayer.Character:TranslateBy(game.Players.LocalPlayer.Character.Humanoid.MoveDirection * TargetWalkspeed/50)
+        end
+    end)
 end)
 
-main.Parent = FightingGui
-main.Active = true
-main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-main.Position = UDim2.new(0.073011741, 0, 0.237333342, 0)
-main.Size = UDim2.new(0, 273, 0, 221)
-main.Draggable = true
-
-Cre.Name = "Cre"
-Cre.Parent = main
-Cre.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-Cre.Position = UDim2.new(0, 0, -0.226244345, 0)
-Cre.Size = UDim2.new(0, 273, 0, 50)
-Cre.Font = Enum.Font.SourceSans
-Cre.Text = "Script made by WarriorRoberr"
-Cre.TextColor3 = Color3.fromRGB(0, 0, 0)
-Cre.TextScaled = true
-Cre.TextSize = 14.000
-Cre.TextWrapped = true
-
-HitBox.Name = "HitBox"
-HitBox.Parent = main
-HitBox.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-HitBox.Position = UDim2.new(0.0586080588, 0, 0.0995475128, 0)
-HitBox.Size = UDim2.new(0, 65, 0, 50)
-HitBox.Font = Enum.Font.SourceSans
-HitBox.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)
-HitBox.PlaceholderText = "Hitbox"
-HitBox.Text = ""
-HitBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-HitBox.TextScaled = true
-HitBox.TextSize = 14.000
-HitBox.TextWrapped = true
-
-Red.Name = "Red"
-Red.Parent = main
-Red.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-Red.Position = UDim2.new(0.485832304, 0, 0.0995475128, 0)
-Red.Size = UDim2.new(0, 37, 0, 31)
-Red.Font = Enum.Font.SourceSans
-Red.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)
-Red.PlaceholderText = "Red"
-Red.Text = ""
-Red.TextColor3 = Color3.fromRGB(0, 0, 0)
-Red.TextSize = 14.000
-
-Green.Name = "Green"
-Green.Parent = main
-Green.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-Green.Position = UDim2.new(0.665319502, 0, 0.0995475128, 0)
-Green.Size = UDim2.new(0, 37, 0, 31)
-Green.Font = Enum.Font.SourceSans
-Green.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)
-Green.PlaceholderText = "Green"
-Green.Text = ""
-Green.TextColor3 = Color3.fromRGB(0, 0, 0)
-Green.TextSize = 14.000
-
-TextLabel.Parent = main
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-TextLabel.Position = UDim2.new(0.47118023, 0, 0.325791866, 0)
-TextLabel.Size = UDim2.new(0, 140, 0, 37)
-TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "Colors"
-TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 14.000
-TextLabel.TextWrapped = true
-
-Blue.Name = "Blue"
-Blue.Parent = main
-Blue.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
-Blue.Position = UDim2.new(0.837480664, 0, 0.0995475128, 0)
-Blue.Size = UDim2.new(0, 37, 0, 31)
-Blue.Font = Enum.Font.SourceSans
-Blue.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)
-Blue.PlaceholderText = "Blue"
-Blue.Text = ""
-Blue.TextColor3 = Color3.fromRGB(0, 0, 0)
-Blue.TextSize = 14.000
-game:GetService('RunService').RenderStepped:connect(function()
- for i,v in next, game:GetService('Players'):GetPlayers() do
-  if v.Name ~= game:GetService('Players').LocalPlayer.Name then
-   v.Character.HumanoidRootPart.Size = Vector3.new(HitBox.Text,HitBox.Text,HitBox.Text)
-   v.Character.HumanoidRootPart.Transparency = 0.8
-   v.Character.HumanoidRootPart.Color = Color3.new(Red.Text,Green.Text,Blue.Text)
-   v.Character.HumanoidRootPart.Material = "Neon"
-   v.Character.HumanoidRootPart.CanCollide = false
-  end
- end
+game:GetService("Workspace").CurrentRooms.DescendantAdded:Connect(function(descendant)
+    if OrionLib.Flags["NoSeek"].Value == true and descendant.Name == ("Seek_Arm" or "ChandelierObstruction") then
+        task.spawn(function()
+            wait()
+            descendant:Destroy()
+        end)
+    end
 end)
+
+game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+    if OrionLib.Flags["InstantToggle"].Value == true then
+        fireproximityprompt(prompt)
+    end
+end)
+
+local old
+old = hookmetamethod(game,"__namecall",newcclosure(function(self,...)
+    local args = {...}
+    local method = getnamecallmethod()
+    
+    if tostring(self) == 'Screech' and method == "FireServer" and OrionLib.Flags["ScreechToggle"].Value == true then
+        args[1] = true
+        return old(self,unpack(args))
+    end
+    if tostring(self) == 'ClutchHeartbeat' and method == "FireServer" and OrionLib.Flags["HeartbeatWin"].Value == true then
+        args[2] = true
+        return old(self,unpack(args))
+    end
+    
+    return old(self,...)
+end))
+
+workspace.CurrentCamera.ChildAdded:Connect(function(child)
+    if child.Name == "Screech" and OrionLib.Flags["ScreechToggle"].Value == true then
+        child:Destroy()
+    end
+end)
+
+local NotificationCoroutine = coroutine.create(function()
+    LatestRoom.Changed:Connect(function()
+        if OrionLib.Flags["PredictToggle"].Value == true then
+            local n = ChaseStart.Value - LatestRoom.Value
+            if 0 < n and n < 4 then
+                OrionLib:MakeNotification({
+                    Name = "Warning!",
+                    Content = "Event in " .. tostring(n) .. " rooms.",
+                    Time = 5
+                })
+            end
+        end
+        if OrionLib.Flags["BookToggle"].Value == true then
+            if LatestRoom.Value == 50 then
+                coroutine.resume(BookCoroutine)
+            end
+        end
+        if OrionLib.Flags["FigureToggle"].Value == true then
+            if LatestRoom.Value == 50 then
+                coroutine.resume(EntityCoroutine)
+            end
+        end
+    end)
+    workspace.ChildAdded:Connect(function(inst)
+        if inst.Name == "RushMoving" and OrionLib.Flags["MobToggle"].Value == true then
+            if OrionLib.Flags["AvoidRushToggle"].Value == true then
+                OrionLib:MakeNotification({
+                    Name = "Warning!",
+                    Content = "Avoiding Rush. Please wait.",
+                    Time = 5
+                })
+                local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                local con = game:GetService("RunService").Heartbeat:Connect(function()
+                    game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,20,0))
+                end)
+                
+                inst.Destroying:Wait()
+                con:Disconnect()
+
+                game.Players.LocalPlayer.Character:MoveTo(OldPos)
+            else
+                OrionLib:MakeNotification({
+                    Name = "Warning!",
+                    Content = "Rush has spawned, hide!",
+                    Time = 5
+                })
+            end
+        elseif inst.Name == "AmbushMoving" and OrionLib.Flags["MobToggle"].Value == true then
+            if OrionLib.Flags["AvoidRushToggle"].Value == true then
+                OrionLib:MakeNotification({
+                    Name = "Warning!",
+                    Content = "Avoiding Ambush. Please wait.",
+                    Time = 5
+                })
+                local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                local con = game:GetService("RunService").Heartbeat:Connect(function()
+                    game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,20,0))
+                end)
+                
+                inst.Destroying:Wait()
+                con:Disconnect()
+                
+                game.Players.LocalPlayer.Character:MoveTo(OldPos)
+            else
+                OrionLib:MakeNotification({
+                    Name = "Warning!",
+                    Content = "Ambush has spawned, hide!",
+                    Time = 5
+                })
+            end
+        end
+    end)
+end)
+
+--// ok actual code ends here
+
+local CreditsTab = Window:MakeTab({
+	Name = "Credits",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+CreditsTab:AddParagraph("Credits to","OminousVibes - (Got most of the ideas from their thread, check it out! - https://v3rmillion.net/showthread.php?tid=1184088)")
+
+coroutine.resume(NotificationCoroutine)
+
+OrionLib:Init()
+
+task.wait(2)
